@@ -44,16 +44,29 @@ jobs:
           name: my-build
           path: ${{ github.workspace }}/dist
       - name: Install Huawei OBSUTIL
-        with:
-          max_attempts: 3
-          command: |
-             wget https://obs-community-intl.obs.ap-southeast-1.myhuaweicloud.com/obsutil/current/obsutil_linux_amd64.tar.gz
-             tar -xzvf obsutil_linux_amd64.tar.gz
-             chmod +x obsutil_linux_amd64_5.5.12/obsutil
-             obsutil_linux_amd64_5.5.12/obsutil config -i=test_ak -k=test_sk -e=obs.ap-southeast-3.myhuaweicloud.com
+        run: |
+          wget https://obs-community-intl.obs.ap-southeast-1.myhuaweicloud.com/obsutil/current/obsutil_linux_amd64.tar.gz
+          tar -xzvf obsutil_linux_amd64.tar.gz
+          chmod +x obsutil_linux_amd64_5.5.12/obsutil
+          obsutil_linux_amd64_5.5.12/obsutil config -i=test_ak -k=test_sk -e=obs.ap-southeast-3.myhuaweicloud.com
           
-             command_result=$(obsutil_linux_amd64_5.5.12/obsutil sync dist obs://lytest12)
-             echo $?
+          MAX_RETRY=5
+          retry_count=0
+          while true; do
+            obsutil_linux_amd64_5.5.12/obsutil sync dist obs://lytest12
+            echo $?
+            if [ $? -eq 0 ]; then
+              echo "Command succeeded!"
+              break
+            fi
+            if [ $retry_count -ge $MAX_RETRY ]; then
+              echo "Command failed after $MAX_RETRY attempts."
+              exit 1
+            fi
+            echo "Command failed, retrying in 10 seconds..."
+            retry_count=$((retry_count+1))
+            sleep 10
+          done  
         # set below to true to get the obsfile output as artifact
         continue-on-error: true
       - name: Archive obsutil results
