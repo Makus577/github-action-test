@@ -49,24 +49,9 @@ jobs:
           tar -xzvf obsutil_linux_amd64.tar.gz
           chmod +x obsutil_linux_amd64_5.5.12/obsutil
           obsutil_linux_amd64_5.5.12/obsutil config -i=6ICGCNOCUGXEXR4ZUENT -k=YvDIR6GIDzZapAvHrPKaVybgN068xBifknmUqa4 -e=obs.ap-southeast-3.myhuaweicloud.com
-          
-          MAX_RETRY=5
-          retry_count=0
-          while true; do
-            obsutil_linux_amd64_5.5.12/obsutil sync dist obs://lytest12
-            echo $?
-            if [ $? -eq 0 ]; then
-              echo "Command succeeded!"
-              break
-            fi
-            if [ $retry_count -ge $MAX_RETRY ]; then
-              echo "Command failed after $MAX_RETRY attempts."
-              exit 1
-            fi
-            echo "Command failed, retrying in 10 seconds..."
-            retry_count=$((retry_count+1))
-            sleep 10
-          done
+
+          obsutil_linux_amd64_5.5.12/obsutil sync dist obs://lytest12
+          echo $?
       - name: Archive obsutil results
         uses: actions/upload-artifact@v4
         with:
