@@ -67,7 +67,7 @@ jobs:
             fi
 
             echo "Command failed, retrying in 10 seconds..."
-            retry_count=${retry_count+1}
+            retry_count=$((retry_count+1))
             sleep 10
           done          
         # set below to true to get the obsfile output as artifact
