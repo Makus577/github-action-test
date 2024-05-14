@@ -61,7 +61,7 @@ jobs:
               break
             fi
 
-            if [ $rety_count -ge $MAX_RETRY]; then
+            if [ $retry_count -ge $MAX_RETRY]; then
               echo "Command failed after $MAX_RETRY attempts."
               exit 1
             fi
