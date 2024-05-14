@@ -62,7 +62,7 @@ jobs:
             fi
 
             if [ $rety_count -ge $MAX_RETRY]; then
-              then "Command failed after $MAX_RETRY attempts."
+              echo "Command failed after $MAX_RETRY attempts."
               exit 1
             fi
 
