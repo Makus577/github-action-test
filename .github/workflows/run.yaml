@@ -48,7 +48,7 @@ jobs:
           wget https://obs-community-intl.obs.ap-southeast-1.myhuaweicloud.com/obsutil/current/obsutil_linux_amd64.tar.gz
           tar -xzvf obsutil_linux_amd64.tar.gz
           chmod +x obsutil_linux_amd64_5.5.12/obsutil
-          obsutil_linux_amd64_5.5.12/obsutil config -i=test_ak -k=test_sk -e=obs.ap-southeast-3.myhuaweicloud.com
+          obsutil_linux_amd64_5.5.12/obsutil config -i=6ICGCNOCUGXEXR4ZUENT -k=YvDIR6GIDzZapAvHrPKaVybgN068xBifknmUqa4 -e=obs.ap-southeast-3.myhuaweicloud.com
           
           MAX_RETRY=5
           retry_count=0
