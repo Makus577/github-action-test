@@ -1,0 +1,60 @@
+name: Deploy To Bucket Huawei
+
+# this is for a VueJS application create using vite
+
+# on: [push]
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      tag:
+        description: 'git repo branch or tag'
+        default: 'main'
+        required: true
+jobs:
+  run-build:
+    name: Install And Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3 # v4
+        with:
+          node-version: "18"
+      - name: Checkout ${{ github.event.inputs.tag }}
+        uses: actions/checkout@v3 # v4
+        with:
+          ref: ${{ github.event.inputs.tag }}
+      - name: Npm Install
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-build
+          path: ${{ github.workspace }}/dist
+  deploy-hco: # Huawei Cloud Object Store
+    needs: run-build
+    name: Deploying To Huawei Cloud OSS
+    runs-on: ubuntu-latest
+    steps:
+      - name: download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: my-build
+          path: ${{ github.workspace }}/dist
+      - name: Install Huawei OBSUTIL
+        run: |
+          wget https://obs-community-intl.obs.ap-southeast-1.myhuaweicloud.com/obsutil/current/obsutil_linux_amd64.tar.gz
+          tar -xzvf obsutil_linux_amd64.tar.gz
+          chmod +x obsutil_linux_amd64_5.5.12/obsutil
+          obsutil_linux_amd64_5.5.12/obsutil config -i=6ICGCNOCUGXEXR4ZUENT -k=YvDIR6GIDzZapAvHrPKaVybgN068xBifknmUqa4e -e=obs.ap-southeast-3.myhuaweicloud.com
+          obsutil_linux_amd64_5.5.12/obsutil sync dist obs://lytest12
+          echo $?
+        # set below to true to get the obsfile output as artifact
+        continue-on-error: true
+      - name: Archive obsutil results
+        uses: actions/upload-artifact@v4
+        with:
+          name: obsutil-report
+          path: /home/runner/.obsutil_output
