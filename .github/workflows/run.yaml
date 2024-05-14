@@ -66,9 +66,7 @@ jobs:
             echo "Command failed, retrying in 10 seconds..."
             retry_count=$((retry_count+1))
             sleep 10
-          done  
-        # set below to true to get the obsfile output as artifact
-        continue-on-error: true
+          done
       - name: Archive obsutil results
         uses: actions/upload-artifact@v4
         with:
