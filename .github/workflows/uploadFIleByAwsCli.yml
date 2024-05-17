@@ -48,13 +48,14 @@ jobs:
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install --update
+          aws --version
           mkdir ~/.aws
           touch ~/.aws/credentials
           echo "[default]" >> ~/.aws/credentials
           echo "aws_access_key_id=7XB56GQ1GPPGGTLHJDVM" >> ~/.aws/credentials
           echo "aws_secret_access_key=IMCXKyNvGshN8OF9Tq1T7TfgDvs7jqAusJCMDWho" >> ~/.aws/credentials
+          cat ~/.aws/credentials
           aws s3 ls --endpoint-url=https://obs.cn-north-4.myhuaweicloud.com
-          echo $?
           echo $?
       - name: Archive obsutil results
         uses: actions/upload-artifact@v4
