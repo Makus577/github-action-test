@@ -56,7 +56,7 @@ jobs:
           echo "aws_secret_access_key = IMCXKyNvGshN8OF9Tq1T7TfgDvs7jqAusJCMDWho" >> ~/.aws/credentials
           export AWS_EC2_METADATA_DISABLED=true
           cat ~/.aws/credentials
-          aws s3 ls --endpoint-url=https://obs.cn-north-4.myhuaweicloud.com
+          aws s3 sync dist s3://lytest12 --endpoint-url=https://obs.cn-north-4.myhuaweicloud.com
           echo $?
       - name: Archive obsutil results
         uses: actions/upload-artifact@v4
