@@ -1,0 +1,61 @@
+name: Deploy To Bucket Huawei
+
+# this is for a VueJS application create using vite
+
+# on: [push]
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      tag:
+        description: 'git repo branch or tag'
+        default: 'main'
+        required: true
+jobs:
+  run-build:
+    name: Install And Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3 # v4
+        with:
+          node-version: "18"
+      - name: Checkout ${{ github.event.inputs.tag }}
+        uses: actions/checkout@v3 # v4
+        with:
+          ref: ${{ github.event.inputs.tag }}
+      - name: Npm Install
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: my-build
+          path: ${{ github.workspace }}/dist
+  deploy-hco: # Huawei Cloud Object Store
+    needs: run-build
+    name: Deploying To Huawei Cloud OSS
+    runs-on: ubuntu-latest
+    steps:
+      - name: download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: my-build
+          path: ${{ github.workspace }}/dist
+      - name: Install Huawei OBSUTIL
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+          touch ~/.aws/credentials
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id=7XB56GQ1GPPGGTLHJDVM" > ~/.aws/credentials
+          echo "aws_secret_access_key=IMCXKyNvGshN8OF9Tq1T7TfgDvs7jqAusJCMDWho" > ~/.aws/credentials
+          aws s3 ls --endpoint-url=https://obs.cn-north-4.myhuaweicloud.com
+          echo $?
+      - name: Archive obsutil results
+        uses: actions/upload-artifact@v4
+        with:
+          name: obsutil-report
+          path: /home/runner/.obsutil_output
