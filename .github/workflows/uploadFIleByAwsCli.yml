@@ -1,4 +1,4 @@
-name: Deploy To Bucket Huawei
+name: Deploy To Bucket Huawei By AWS CLI
 
 # this is for a VueJS application create using vite
 
@@ -43,15 +43,17 @@ jobs:
         with:
           name: my-build
           path: ${{ github.workspace }}/dist
-      - name: Install Huawei OBSUTIL
+      - name: Install AWS CLI
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: 7XB56GQ1GPPGGTLHJDVM
+          aws-secret-access-key: IMCXKyNvGshN8OF9Tq1T7TfgDvs7jqAusJCMDWho
+          aws-region: us-east-2
+      - name: Upload Huawei
         run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install
-          touch ~/.aws/credentials
-          echo "[default]" > ~/.aws/credentials
-          echo "aws_access_key_id=7XB56GQ1GPPGGTLHJDVM" > ~/.aws/credentials
-          echo "aws_secret_access_key=IMCXKyNvGshN8OF9Tq1T7TfgDvs7jqAusJCMDWho" > ~/.aws/credentials
           aws s3 ls --endpoint-url=https://obs.cn-north-4.myhuaweicloud.com
           echo $?
       - name: Archive obsutil results
